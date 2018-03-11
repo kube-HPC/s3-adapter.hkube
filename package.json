@@ -4,7 +4,9 @@
   "description": "s3 adapter",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha test --colors --recursive --exit",
+    "test-travis": "./node_modules/istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha -- -R spec test --exit",
+    "build": "npm publish"
   },
   "keywords": [
     "s3",
