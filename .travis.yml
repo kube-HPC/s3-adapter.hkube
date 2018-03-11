@@ -13,7 +13,7 @@ cache:
   directories:
   - node_modules
 script:
-# - NODE_ENV=test npm run-script test-travis
+- NODE_ENV=test npm run-script test-travis
 # Send coverage data to Coveralls
 # after_script: "cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
 after_success:
