@@ -1,6 +1,6 @@
 {
   "name": "@hkube/s3-adapter",
-  "version": "1.0.16",
+  "version": "1.0.17",
   "description": "s3 adapter",
   "main": "index.js",
   "scripts": {
