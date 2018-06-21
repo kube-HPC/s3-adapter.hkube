@@ -4,9 +4,16 @@
   "description": "s3 adapter",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"No test specified\"",
-    "test-travis": "echo \"No test specified\"",
+    "lint": "./node_modules/eslint/bin/eslint.js .",
+    "test": "./node_modules/mocha/bin/_mocha tests --colors --recursive --exit",
+    "test-travis": "./node_modules/istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha -- -R spec tests --colors --recursive --exit",
     "build": "npm publish"
+  },
+  "pre-commit": {
+    "run": [
+      "lint",
+      "test"
+    ]
   },
   "keywords": [
     "s3",
@@ -15,8 +22,19 @@
   "author": "tal",
   "license": "ISC",
   "dependencies": {
-    "@hkube/s3-client": "^1.0.17",
+    "@hkube/s3-client": "^1.0.18",
     "moment": "^2.22.2"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "coveralls": "^3.0.1",
+    "eslint": "^4.19.1",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-plugin-chai-friendly": "^0.4.1",
+    "eslint-plugin-import": "^2.12.0",
+    "istanbul": "^1.1.0-alpha.1",
+    "mocha": "^5.2.0",
+    "pre-commit": "^1.2.2",
+    "sinon": "^4.5.0"
+  }
 }
