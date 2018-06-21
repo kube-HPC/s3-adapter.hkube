@@ -79,4 +79,9 @@ describe('s3-adapter', () => {
             expect(res.Deleted.length).to.equal(3501);
         }).timeout(10000);
     });
+    describe('jobPath', () => {
+        it('jobPath', async () => {
+            await adapter.jobPath({ jobId: 'same-value-test', taskId: 'task-1', data: 'test' });
+        });
+    });
 });
