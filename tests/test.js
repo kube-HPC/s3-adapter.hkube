@@ -52,7 +52,7 @@ describe('s3-adapter', () => {
             await Promise.all(promiseArray);
             const res = await adapter.listObjects({ Bucket: BUCKETS_NAMES.HKUBE, Prefix: `${moment().format(DATE_FORMAT)}/more-than-3000-keys` });
             expect(res.length).to.equal(3500);
-        }).timeout(10000);
+        }).timeout(20000);
         it('delete by date', async () => {
             await adapter._put({ Bucket: BUCKETS_NAMES.HKUBE, Key: `${moment('2015-01-10').format(DATE_FORMAT)}/test1/test1.json`, Body: { data: 'sss' } });
             await adapter._put({ Bucket: BUCKETS_NAMES.HKUBE, Key: `${moment('2015-01-10').format(DATE_FORMAT)}/test2/test2.json`, Body: { data: 'sss' } });
@@ -77,7 +77,7 @@ describe('s3-adapter', () => {
 
             const res = await adapter.deleteByDate({ Bucket: BUCKETS_NAMES.HKUBE, Date: new Date('2014-11-11') });
             expect(res.Deleted.length).to.equal(3501);
-        }).timeout(10000);
+        }).timeout(20000);
     });
     describe('jobPath', () => {
         it('jobPath', async () => {
