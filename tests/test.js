@@ -27,7 +27,7 @@ describe('s3-adapter', () => {
         });
         it('get all tasks of specific jobid', async () => {
             const jobId = Date.now();
-            await Promise.all([
+            const results = await Promise.all([
                 adapter.put({ jobId, taskId: '0', data: 'test0' }),
                 adapter.put({ jobId, taskId: '1', data: 'test1' }),
                 adapter.put({ jobId, taskId: '2', data: 'test2' }),
@@ -36,11 +36,11 @@ describe('s3-adapter', () => {
                 adapter.put({ jobId, taskId: '5', data: 'test5' }),
                 adapter.put({ jobId, taskId: '6', data: 'test6' })]);
 
-            const res = await adapter.listObjects({ Bucket: BUCKETS_NAMES.HKUBE, Prefix: `${moment().format(DATE_FORMAT)}/${jobId}` });
+            const res = await adapter.listObjects({ Filter: `${moment().format(DATE_FORMAT)}/${jobId}` });
             expect(res.length).to.equal(7);
 
-            for (let i = 0; i < 7; i += 1) {
-                const r = await adapter.get({ Bucket: BUCKETS_NAMES.HKUBE, Key: res[i].Key });
+            for (let i = 0; i < results.length; i += 1) {
+                const r = await adapter.get(results[i]);
                 expect(r).to.equal('test' + i);
             }
         });
@@ -50,7 +50,7 @@ describe('s3-adapter', () => {
                 promiseArray.push(adapter.put({ jobId: 'more-than-3000-keys', taskId: 'task' + i, data: 'test' + i }));
             }
             await Promise.all(promiseArray);
-            const res = await adapter.listObjects({ Bucket: BUCKETS_NAMES.HKUBE, Prefix: `${moment().format(DATE_FORMAT)}/more-than-3000-keys` });
+            const res = await adapter.listObjects({ Filter: `${moment().format(DATE_FORMAT)}/more-than-3000-keys` });
             expect(res.length).to.equal(3500);
         }).timeout(40000);
         it('delete by date', async () => {
@@ -65,7 +65,7 @@ describe('s3-adapter', () => {
             await adapter._put({ Bucket: BUCKETS_NAMES.HKUBE, Key: `${moment('2015-01-10').format(DATE_FORMAT)}/test3/test6.json`, Body: { data: 'sss' } });
             await adapter._put({ Bucket: BUCKETS_NAMES.HKUBE, Key: `${moment('2015-01-10').format(DATE_FORMAT)}/test3/test7.json`, Body: { data: 'sss' } });
 
-            const res = await adapter.deleteByDate({ Bucket: BUCKETS_NAMES.HKUBE, Date: new Date('2015-01-10') });
+            const res = await adapter.deleteByDate({ Date: new Date('2015-01-10') });
             expect(res.Deleted.length).to.equal(11);
         }).timeout(5000);
         it('delete by date more than 3000 items', async () => {
@@ -75,7 +75,7 @@ describe('s3-adapter', () => {
             }
             await Promise.all(promiseArray);
 
-            const res = await adapter.deleteByDate({ Bucket: BUCKETS_NAMES.HKUBE, Date: new Date('2014-11-11') });
+            const res = await adapter.deleteByDate({ Date: new Date('2014-11-11') });
             expect(res.Deleted.length).to.equal(3501);
         }).timeout(40000);
     });
