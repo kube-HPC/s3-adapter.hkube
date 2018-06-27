@@ -5,14 +5,13 @@ const DATE_FORMAT = 'DD-MM-YYYY';
 const { BUCKETS_NAMES } = require('../consts/buckets-names');
 
 describe('s3-adapter', () => {
-    before((done) => {
+    before(async () => {
         const options = {
             accessKeyId: process.env.AWS_ACCESS_KEY_ID || 'AKIAIOSFODNN7EXAMPLE',
             secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY',
             endpoint: process.env.AWS_ENDPOINT || 'http://127.0.0.1:9000'
         };
-        adapter.init(options, null, true);
-        done();
+        await adapter.init(options, null, true);
     });
     describe('put', () => {
         it('put and get same value', async () => {
