@@ -77,6 +77,19 @@ describe('s3-adapter', () => {
             const res = await adapter.deleteByDate({ Date: new Date('2014-11-11') });
             expect(res.Deleted.length).to.equal(3501);
         }).timeout(40000);
+        it('list objects without filter', async () => {
+            const jobId = Date.now();
+            await Promise.all([
+                adapter.put({ jobId, taskId: '0', data: 'test0' }),
+                adapter.put({ jobId, taskId: '0', data: 'test0' }),
+                adapter.putResults({ jobId, data: 'test0' }),
+                adapter.putResults({ jobId, data: 'test6' })]);
+
+            const res1 = await adapter.listObjects();
+            expect(res1.length > 0).to.be.true;
+            const res2 = await adapter.listObjectsResults();
+            expect(res2.length > 0).to.be.true;
+        }).timeout(40000);
     });
     describe('jobPath', () => {
         it('jobPath', async () => {
