@@ -1,7 +1,6 @@
 const { expect } = require('chai');
 const adapter = require('../lib/s3-adapter');
 const moment = require('moment');
-const DATE_FORMAT = 'DD-MM-YYYY';
 const { BUCKETS_NAMES } = require('../consts/buckets-names');
 
 describe('s3-adapter', () => {
@@ -35,7 +34,7 @@ describe('s3-adapter', () => {
                 adapter.put({ jobId, taskId: '5', data: 'test5' }),
                 adapter.put({ jobId, taskId: '6', data: 'test6' })]);
 
-            const res = await adapter.listObjects({ Filter: `${moment().format(DATE_FORMAT)}/${jobId}` });
+            const res = await adapter.listObjects({ Filter: `${moment().format(adapter.DateFormat)}/${jobId}` });
             expect(res.length).to.equal(7);
 
             for (let i = 0; i < results.length; i += 1) {
@@ -49,32 +48,32 @@ describe('s3-adapter', () => {
                 promiseArray.push(adapter.put({ jobId: 'more-than-3000-keys', taskId: 'task' + i, data: 'test' + i }));
             }
             await Promise.all(promiseArray);
-            const res = await adapter.listObjects({ Filter: `${moment().format(DATE_FORMAT)}/more-than-3000-keys` });
+            const res = await adapter.listObjects({ Filter: `${moment().format(adapter.DateFormat)}/more-than-3000-keys` });
             expect(res.length).to.equal(3500);
         }).timeout(40000);
         it('delete by date', async () => {
-            await adapter._put({ Bucket: BUCKETS_NAMES.HKUBE, Key: `${moment('2015-01-10').format(DATE_FORMAT)}/test1/test1.json`, Body: { data: 'sss' } });
-            await adapter._put({ Bucket: BUCKETS_NAMES.HKUBE, Key: `${moment('2015-01-10').format(DATE_FORMAT)}/test2/test2.json`, Body: { data: 'sss' } });
-            await adapter._put({ Bucket: BUCKETS_NAMES.HKUBE, Key: `${moment('2015-01-10').format(DATE_FORMAT)}/test3/test3.json`, Body: { data: 'sss' } });
-            await adapter._put({ Bucket: BUCKETS_NAMES.HKUBE, Key: `${moment('2015-01-10').format(DATE_FORMAT)}/test4/test4.json`, Body: { data: 'sss' } });
-            await adapter._put({ Bucket: BUCKETS_NAMES.HKUBE, Key: `${moment('2015-01-10').format(DATE_FORMAT)}/test1/test2.json`, Body: { data: 'sss' } });
-            await adapter._put({ Bucket: BUCKETS_NAMES.HKUBE, Key: `${moment('2015-01-10').format(DATE_FORMAT)}/test2/test3.json`, Body: { data: 'sss' } });
-            await adapter._put({ Bucket: BUCKETS_NAMES.HKUBE, Key: `${moment('2015-01-10').format(DATE_FORMAT)}/test3/test4.json`, Body: { data: 'sss' } });
-            await adapter._put({ Bucket: BUCKETS_NAMES.HKUBE, Key: `${moment('2015-01-10').format(DATE_FORMAT)}/test3/test5.json`, Body: { data: 'sss' } });
-            await adapter._put({ Bucket: BUCKETS_NAMES.HKUBE, Key: `${moment('2015-01-10').format(DATE_FORMAT)}/test3/test6.json`, Body: { data: 'sss' } });
-            await adapter._put({ Bucket: BUCKETS_NAMES.HKUBE, Key: `${moment('2015-01-10').format(DATE_FORMAT)}/test3/test7.json`, Body: { data: 'sss' } });
+            await adapter._put({ Bucket: BUCKETS_NAMES.HKUBE, Key: `${moment('2015-01-14').format(adapter.DateFormat)}/test1/test1.json`, Body: { data: 'sss' } });
+            await adapter._put({ Bucket: BUCKETS_NAMES.HKUBE, Key: `${moment('2015-01-14').format(adapter.DateFormat)}/test2/test2.json`, Body: { data: 'sss' } });
+            await adapter._put({ Bucket: BUCKETS_NAMES.HKUBE, Key: `${moment('2015-01-14').format(adapter.DateFormat)}/test3/test3.json`, Body: { data: 'sss' } });
+            await adapter._put({ Bucket: BUCKETS_NAMES.HKUBE, Key: `${moment('2015-01-14').format(adapter.DateFormat)}/test4/test4.json`, Body: { data: 'sss' } });
+            await adapter._put({ Bucket: BUCKETS_NAMES.HKUBE, Key: `${moment('2015-01-14').format(adapter.DateFormat)}/test1/test2.json`, Body: { data: 'sss' } });
+            await adapter._put({ Bucket: BUCKETS_NAMES.HKUBE, Key: `${moment('2015-01-14').format(adapter.DateFormat)}/test2/test3.json`, Body: { data: 'sss' } });
+            await adapter._put({ Bucket: BUCKETS_NAMES.HKUBE, Key: `${moment('2015-01-14').format(adapter.DateFormat)}/test3/test4.json`, Body: { data: 'sss' } });
+            await adapter._put({ Bucket: BUCKETS_NAMES.HKUBE, Key: `${moment('2015-01-14').format(adapter.DateFormat)}/test3/test5.json`, Body: { data: 'sss' } });
+            await adapter._put({ Bucket: BUCKETS_NAMES.HKUBE, Key: `${moment('2015-01-14').format(adapter.DateFormat)}/test3/test6.json`, Body: { data: 'sss' } });
+            await adapter._put({ Bucket: BUCKETS_NAMES.HKUBE, Key: `${moment('2015-01-14').format(adapter.DateFormat)}/test3/test7.json`, Body: { data: 'sss' } });
 
-            const res = await adapter.deleteByDate({ Date: new Date('2015-01-10') });
+            const res = await adapter.deleteByDate({ Date: new Date('2015-01-14') });
             expect(res.Deleted.length).to.equal(11);
         }).timeout(5000);
         it('delete by date more than 3000 items', async () => {
             const promiseArray = [];
             for (let i = 0; i < 3500; i += 1) {
-                promiseArray.push(adapter._put({ Bucket: BUCKETS_NAMES.HKUBE, Key: `${moment('2014-11-11').format(DATE_FORMAT)}/test3/test${i}.json`, Body: { data: 'sss' } }));
+                promiseArray.push(adapter._put({ Bucket: BUCKETS_NAMES.HKUBE, Key: `${moment('2014-11-28').format(adapter.DateFormat)}/test3/test${i}.json`, Body: { data: 'sss' } }));
             }
             await Promise.all(promiseArray);
 
-            const res = await adapter.deleteByDate({ Date: new Date('2014-11-11') });
+            const res = await adapter.deleteByDate({ Date: new Date('2014-11-28') });
             expect(res.Deleted.length).to.equal(3501);
         }).timeout(40000);
         it('list objects without filter', async () => {
