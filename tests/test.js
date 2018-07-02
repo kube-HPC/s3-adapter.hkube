@@ -14,6 +14,21 @@ describe('s3-adapter', () => {
     });
     describe('put', () => {
         it('put and get same value', async () => {
+            await adapter._put({ Bucket: BUCKETS_NAMES.HKUBE, Key: `${moment('2015-01-27').format(adapter.DateFormat)}/test1/test1.json`, Body: { data: 'sss' } });
+            await adapter._put({ Bucket: BUCKETS_NAMES.HKUBE, Key: `${moment('2015-01-26').format(adapter.DateFormat)}/test1/test1.json`, Body: { data: 'sss' } });
+            await adapter._put({ Bucket: BUCKETS_NAMES.HKUBE, Key: `${moment('2015-01-25').format(adapter.DateFormat)}/test1/test1.json`, Body: { data: 'sss' } });
+            await adapter._put({ Bucket: BUCKETS_NAMES.HKUBE, Key: `${moment('2015-01-24').format(adapter.DateFormat)}/test1/test1.json`, Body: { data: 'sss' } });
+            await adapter._put({ Bucket: BUCKETS_NAMES.HKUBE, Key: `${moment('2015-01-23').format(adapter.DateFormat)}/test1/test1.json`, Body: { data: 'sss' } });
+            await adapter._put({ Bucket: BUCKETS_NAMES.HKUBE, Key: `${moment('2015-01-22').format(adapter.DateFormat)}/test1/test1.json`, Body: { data: 'sss' } });
+            await adapter._put({ Bucket: BUCKETS_NAMES.HKUBE, Key: `${moment('2015-01-22').format(adapter.DateFormat)}/test1/test1.json`, Body: { data: 'sss' } });
+            await adapter._put({ Bucket: BUCKETS_NAMES.HKUBE, Key: `${moment('2015-01-21').format(adapter.DateFormat)}/test1/test1.json`, Body: { data: 'sss' } });
+
+            await adapter._put({ Bucket: BUCKETS_NAMES.HKUBE, Key: `${moment('2018-06-21').format(adapter.DateFormat)}/test1/test1.json`, Body: { data: 'sss' } });
+            await adapter._put({ Bucket: BUCKETS_NAMES.HKUBE, Key: `${moment('2018-06-22').format(adapter.DateFormat)}/test1/test1.json`, Body: { data: 'sss' } });
+            await adapter._put({ Bucket: BUCKETS_NAMES.HKUBE, Key: `${moment('2018-06-23').format(adapter.DateFormat)}/test1/test1.json`, Body: { data: 'sss' } });
+            await adapter._put({ Bucket: BUCKETS_NAMES.HKUBE, Key: `${moment('2018-06-24').format(adapter.DateFormat)}/test1/test1.json`, Body: { data: 'sss' } });
+            await adapter._put({ Bucket: BUCKETS_NAMES.HKUBE, Key: `${moment('2018-06-25').format(adapter.DateFormat)}/test1/test1.json`, Body: { data: 'sss' } });
+
             const link = await adapter.put({ jobId: Date.now(), taskId: 'task-1', data: 'test' });
             const res = await adapter.get(link);
             expect(res).to.equal('test');
@@ -35,7 +50,7 @@ describe('s3-adapter', () => {
                 adapter.put({ jobId, taskId: '6', data: 'test6' })]);
 
             const res = await adapter.listObjects({ Filter: `${moment().format(adapter.DateFormat)}/${jobId}` });
-            expect(res.length).to.equal(7);
+            expect(res[moment().format(adapter.DateFormat)].length).to.equal(7);
 
             for (let i = 0; i < results.length; i += 1) {
                 const r = await adapter.get(results[i]);
@@ -49,7 +64,7 @@ describe('s3-adapter', () => {
             }
             await Promise.all(promiseArray);
             const res = await adapter.listObjects({ Filter: `${moment().format(adapter.DateFormat)}/more-than-3000-keys` });
-            expect(res.length).to.equal(3500);
+            expect(res[moment().format(adapter.DateFormat)].length).to.equal(3500);
         }).timeout(40000);
         it('delete by date', async () => {
             await adapter._put({ Bucket: BUCKETS_NAMES.HKUBE, Key: `${moment('2015-01-14').format(adapter.DateFormat)}/test1/test1.json`, Body: { data: 'sss' } });
@@ -85,9 +100,9 @@ describe('s3-adapter', () => {
                 adapter.putResults({ jobId, data: 'test6' })]);
 
             const res1 = await adapter.listObjects();
-            expect(res1.length > 0).to.be.true;
+            expect(res1[moment().format(adapter.DateFormat)].length > 0).to.be.true;
             const res2 = await adapter.listObjectsResults();
-            expect(res2.length > 0).to.be.true;
+            expect(res2[moment().format(adapter.DateFormat)].length > 0).to.be.true;
         }).timeout(40000);
     });
     describe('jobPath', () => {

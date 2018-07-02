@@ -23,6 +23,7 @@
   "license": "ISC",
   "dependencies": {
     "@hkube/s3-client": "^1.0.18",
+    "lodash.groupby": "^4.6.0",
     "moment": "^2.22.2"
   },
   "devDependencies": {
