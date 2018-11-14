@@ -12,7 +12,7 @@ describe('s3-adapter', () => {
             secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY',
             endpoint: process.env.AWS_ENDPOINT || 'http://127.0.0.1:9000'
         };
-        await adapter.init(options, null, true);
+        await adapter.init(options, null, BUCKETS_NAMES, true);
     });
     describe('put', () => {
         it('put and get same value', async () => {
@@ -35,7 +35,7 @@ describe('s3-adapter', () => {
             expect(res).to.equal('test');
         });
         it('put result', async () => {
-            const link = await adapter.put({ Path: path.join(BUCKETS_NAMES.HKUBE_RESULTS, moment().format(this.DateFormat), 'job-id', 'result.json'), Data: 'test' });
+            const link = await adapter.put({ Path: path.join(BUCKETS_NAMES.HKUBE_RESULTS, moment().format(DateFormat), 'job-id', 'result.json'), Data: 'test' });
             const res = await adapter.get(link);
             expect(res).to.equal('test');
         });
@@ -50,7 +50,7 @@ describe('s3-adapter', () => {
                 adapter.put({ Path: path.join(BUCKETS_NAMES.HKUBE, `${moment().format(DateFormat)}/${jobId}/5`), Data: 'test5' }),
                 adapter.put({ Path: path.join(BUCKETS_NAMES.HKUBE, `${moment().format(DateFormat)}/${jobId}/6`), Data: 'test6' })]);
 
-            const res = await adapter.listObjects({ Filter: `${moment().format(adapter.DateFormat)}/${jobId}` });
+            const res = await adapter.list({ Path: path.join(BUCKETS_NAMES.HKUBE, moment().format(DateFormat), jobId.toString()) });
             expect(res[moment().format(adapter.DateFormat)].length).to.equal(7);
 
             for (let i = 0; i < results.length; i += 1) {
@@ -68,27 +68,27 @@ describe('s3-adapter', () => {
             expect(res[moment().format(DateFormat)].length).to.equal(3500);
         }).timeout(40000);
         xit('delete by date', async () => {
-            await adapter._put({ Bucket: BUCKETS_NAMES.HKUBE, Key: `${moment('2015-01-14').format(adapter.DateFormat)}/test1/test1.json`, Body: { data: 'sss' } });
-            await adapter._put({ Bucket: BUCKETS_NAMES.HKUBE, Key: `${moment('2015-01-14').format(adapter.DateFormat)}/test2/test2.json`, Body: { data: 'sss' } });
-            await adapter._put({ Bucket: BUCKETS_NAMES.HKUBE, Key: `${moment('2015-01-14').format(adapter.DateFormat)}/test3/test3.json`, Body: { data: 'sss' } });
-            await adapter._put({ Bucket: BUCKETS_NAMES.HKUBE, Key: `${moment('2015-01-14').format(adapter.DateFormat)}/test4/test4.json`, Body: { data: 'sss' } });
-            await adapter._put({ Bucket: BUCKETS_NAMES.HKUBE, Key: `${moment('2015-01-14').format(adapter.DateFormat)}/test1/test2.json`, Body: { data: 'sss' } });
-            await adapter._put({ Bucket: BUCKETS_NAMES.HKUBE, Key: `${moment('2015-01-14').format(adapter.DateFormat)}/test2/test3.json`, Body: { data: 'sss' } });
-            await adapter._put({ Bucket: BUCKETS_NAMES.HKUBE, Key: `${moment('2015-01-14').format(adapter.DateFormat)}/test3/test4.json`, Body: { data: 'sss' } });
-            await adapter._put({ Bucket: BUCKETS_NAMES.HKUBE, Key: `${moment('2015-01-14').format(adapter.DateFormat)}/test3/test5.json`, Body: { data: 'sss' } });
-            await adapter._put({ Bucket: BUCKETS_NAMES.HKUBE, Key: `${moment('2015-01-14').format(adapter.DateFormat)}/test3/test6.json`, Body: { data: 'sss' } });
-            await adapter._put({ Bucket: BUCKETS_NAMES.HKUBE, Key: `${moment('2015-01-14').format(adapter.DateFormat)}/test3/test7.json`, Body: { data: 'sss' } });
+            await adapter.put({ Path: path.join(BUCKETS_NAMES.HKUBE, moment('2015-01-14').format(DateFormat), 'test1', 'test1.json'), Data: { data: 'sss' } });
+            await adapter.put({ Path: path.join(BUCKETS_NAMES.HKUBE, moment('2015-01-14').format(DateFormat), 'test2', 'test2.json'), Data: { data: 'sss' } });
+            await adapter.put({ Path: path.join(BUCKETS_NAMES.HKUBE, moment('2015-01-14').format(DateFormat), 'test3', 'test3.json'), Data: { data: 'sss' } });
+            await adapter.put({ Path: path.join(BUCKETS_NAMES.HKUBE, moment('2015-01-14').format(DateFormat), 'test4', 'test4.json'), Data: { data: 'sss' } });
+            await adapter.put({ Path: path.join(BUCKETS_NAMES.HKUBE, moment('2015-01-14').format(DateFormat), 'test1', 'test2.json'), Data: { data: 'sss' } });
+            await adapter.put({ Path: path.join(BUCKETS_NAMES.HKUBE, moment('2015-01-14').format(DateFormat), 'test2', 'test3.json'), Data: { data: 'sss' } });
+            await adapter.put({ Path: path.join(BUCKETS_NAMES.HKUBE, moment('2015-01-14').format(DateFormat), 'test3', 'test4.json'), Data: { data: 'sss' } });
+            await adapter.put({ Path: path.join(BUCKETS_NAMES.HKUBE, moment('2015-01-14').format(DateFormat), 'test3', 'test5.json'), Data: { data: 'sss' } });
+            await adapter.put({ Path: path.join(BUCKETS_NAMES.HKUBE, moment('2015-01-14').format(DateFormat), 'test3', 'test6.json'), Data: { data: 'sss' } });
+            await adapter.put({ Path: path.join(BUCKETS_NAMES.HKUBE, moment('2015-01-14').format(DateFormat), 'test3', 'test7.json'), Data: { data: 'sss' } });
 
-            const res = await adapter.deleteByDate({ Date: new Date('2015-01-14') });
+            const res = await adapter.delete({ Path: path.join(BUCKETS_NAMES.HKUBE, new Date('2015-01-14')) });
             expect(res.Deleted.length).to.equal(11);
         }).timeout(5000);
         xit('delete by date more than 3000 items', async () => {
             const promiseArray = [];
             for (let i = 0; i < 3500; i += 1) {
-                promiseArray.push(adapter._put({ Bucket: BUCKETS_NAMES.HKUBE, Key: `${moment('2014-11-28').format(adapter.DateFormat)}/test3/test${i}.json`, Body: { data: 'sss' } }));
+                promiseArray.push(adapter.put({ Path: path.join(BUCKETS_NAMES.HKUBE, moment('2014-11-28').format(DateFormat), 'test3', `test${i}.json`), Data: { data: 'sss' } }));
             }
             await Promise.all(promiseArray);
-            const res = await adapter.deleteByDate({ Date: new Date('2014-11-28') });
+            const res = await adapter.delete({ Path: path.join(BUCKETS_NAMES.HKUBE, new Date('2014-11-28')) });
             expect(res.Deleted.length).to.equal(3501);
         }).timeout(40000);
         xit('list objects without filter', async () => {
@@ -98,9 +98,9 @@ describe('s3-adapter', () => {
                 adapter.put({ Path: path.join(BUCKETS_NAMES.HKUBE, moment().format(DateFormat), jobId, '0'), Data: 'test0' }),
                 adapter.put({ Path: path.join(BUCKETS_NAMES.HKUBE_RESULTS, moment().format(this.DateFormat), jobId, 'result.json'), Data: 'test0' }),
                 adapter.put({ Path: path.join(BUCKETS_NAMES.HKUBE_RESULTS, moment().format(this.DateFormat), jobId, 'result.json'), Data: 'test6' })]);
-            const res1 = await adapter.listObjects();
+            const res1 = await adapter.list();
             expect(res1[moment().format(adapter.DateFormat)].length > 0).to.be.true;
-            const res2 = await adapter.listObjectsResults();
+            const res2 = await adapter.listResults();
             expect(res2[moment().format(adapter.DateFormat)].length > 0).to.be.true;
         }).timeout(40000);
     });
