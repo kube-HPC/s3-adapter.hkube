@@ -22,7 +22,7 @@
   "author": "tal",
   "license": "ISC",
   "dependencies": {
-    "@hkube/s3-client": "^1.0.21",
+    "@hkube/s3-client": "^1.0.22",
     "moment": "^2.22.2"
   },
   "devDependencies": {
