@@ -137,7 +137,7 @@ describe('s3-adapter', () => {
             await adapter.delete({ path: path.join(BUCKETS_NAMES.HKUBE, '2014-11-28') });
             const res2 = await adapter.list({ path: path.join(BUCKETS_NAMES.HKUBE, '2014-11-28') });
             expect(res2.length).to.equal(0);
-        }).timeout(40000);
+        }).timeout(60000);
         it('list objects without prefix', async () => {
             const jobId = Date.now().toString();
             await Promise.all([
