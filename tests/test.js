@@ -7,7 +7,8 @@ const BUCKETS_NAMES = {
     HKUBE_RESULTS: 'hkube-results',
     HKUBE_METADATA: 'hkube-metadata',
     HKUBE_STORE: 'hkube-store',
-    HKUBE_EXECUTION: 'hkube-execution'
+    HKUBE_EXECUTION: 'hkube-execution',
+    HKUBE_INDEX: 'hkube-index'
 };
 const DateFormat = 'YYYY-MM-DD';
 
@@ -148,6 +149,17 @@ describe('s3-adapter', () => {
             expect(res1.length > 0).to.be.true;
             const res2 = await adapter.list({ path: path.join(BUCKETS_NAMES.HKUBE_RESULTS, '/') });
             expect(res2.length > 0).to.be.true;
+        }).timeout(40000);
+        it('list objects with delimiter', async () => {
+            const jobId = Date.now().toString();
+            await adapter.put({ path: path.join(BUCKETS_NAMES.HKUBE_INDEX, '2019-01-01', jobId, '0'), data: { data: 'sss1' } });
+            await adapter.put({ path: path.join(BUCKETS_NAMES.HKUBE_INDEX, '2019-01-02', jobId, '1'), data: { data: 'sss2' } });
+            await adapter.put({ path: path.join(BUCKETS_NAMES.HKUBE_INDEX, '2019-01-03', jobId, '2'), data: { data: 'sss3' } });
+
+            const rd = await adapter.listByDelimiter({ path: BUCKETS_NAMES.HKUBE_INDEX, delimiter: '/' });
+            expect(rd.includes('2019-01-01/')).to.be.true;
+            expect(rd.includes('2019-01-02/')).to.be.true;
+            expect(rd.includes('2019-01-03/')).to.be.true;
         }).timeout(40000);
     });
 });
