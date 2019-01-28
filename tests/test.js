@@ -73,7 +73,7 @@ describe('s3-adapter', () => {
             const res = await adapter.list({ path: path.join(BUCKETS_NAMES.HKUBE, moment().format(DateFormat), 'more-than-3000-keys') });
             expect(res.length).to.equal(3500);
         }).timeout(40000);
-        it.only('delete more than 3000 items', async () => {
+        it('delete more than 3000 items', async () => {
             {
                 const promiseArray = [];
                 for (let i = 0; i < 3500; i += 1) {
@@ -100,8 +100,9 @@ describe('s3-adapter', () => {
             await adapter.put({ path: path.join(BUCKETS_NAMES.HKUBE, moment('2015-01-14').format(DateFormat), 'test3', 'test6.json'), data: { data: 'sss' } });
             await adapter.put({ path: path.join(BUCKETS_NAMES.HKUBE, moment('2015-01-14').format(DateFormat), 'test3', 'test7.json'), data: { data: 'sss' } });
 
-            const res = await adapter.delete({ path: path.join(BUCKETS_NAMES.HKUBE, '2015-01-14') });
-            expect(res.Deleted.length).to.equal(10);
+            await adapter.delete({ path: path.join(BUCKETS_NAMES.HKUBE, '2015-01-14') });
+            const res0 = await adapter.list({ path: path.join(BUCKETS_NAMES.HKUBE, '2015-01-14') });
+            expect(res0.length).to.equal(0);
 
             await adapter.put({ path: path.join(BUCKETS_NAMES.HKUBE, moment('2015-01-14').format(DateFormat), 'test1', 'test1.json'), data: { data: 'sss' } });
             await adapter.put({ path: path.join(BUCKETS_NAMES.HKUBE, moment('2015-01-14').format(DateFormat), 'test2', 'test2.json'), data: { data: 'sss' } });
@@ -114,14 +115,17 @@ describe('s3-adapter', () => {
             await adapter.put({ path: path.join(BUCKETS_NAMES.HKUBE, moment('2015-01-14').format(DateFormat), 'test3', 'test6.json'), data: { data: 'sss' } });
             await adapter.put({ path: path.join(BUCKETS_NAMES.HKUBE, moment('2015-01-14').format(DateFormat), 'test3', 'test7.json'), data: { data: 'sss' } });
 
-            const res1 = await adapter.delete({ path: path.join(BUCKETS_NAMES.HKUBE, '2015-01-14/test1') });
-            expect(res1.Deleted.length).to.equal(2);
+            await adapter.delete({ path: path.join(BUCKETS_NAMES.HKUBE, '2015-01-14/test1') });
+            const res1 = await adapter.list({ path: path.join(BUCKETS_NAMES.HKUBE, '2015-01-14/test1') });
+            expect(res1.length).to.equal(0);
 
-            const res2 = await adapter.delete({ path: path.join(BUCKETS_NAMES.HKUBE, '2015-01-14/test2') });
-            expect(res2.Deleted.length).to.equal(2);
+            await adapter.delete({ path: path.join(BUCKETS_NAMES.HKUBE, '2015-01-14/test2') });
+            const res2 = await adapter.list({ path: path.join(BUCKETS_NAMES.HKUBE, '2015-01-14/test2') });
+            expect(res2.length).to.equal(0);
 
-            const res3 = await adapter.delete({ path: path.join(BUCKETS_NAMES.HKUBE, '2015-01-14/test3') });
-            expect(res3.Deleted.length).to.equal(5);
+            await adapter.delete({ path: path.join(BUCKETS_NAMES.HKUBE, '2015-01-14/test3') });
+            const res3 = await adapter.list({ path: path.join(BUCKETS_NAMES.HKUBE, '2015-01-14/test3') });
+            expect(res3.length).to.equal(0);
         }).timeout(5000);
         it('delete by date more than 3000 items', async () => {
             const promiseArray = [];
@@ -129,8 +133,9 @@ describe('s3-adapter', () => {
                 promiseArray.push(adapter.put({ path: path.join(BUCKETS_NAMES.HKUBE, moment('2014-11-28').format(DateFormat), 'test3', `test${i}.json`), data: { data: 'sss' } }));
             }
             await Promise.all(promiseArray);
-            const res = await adapter.delete({ path: path.join(BUCKETS_NAMES.HKUBE, '2014-11-28') });
-            expect(res.Deleted.length).to.equal(3500);
+            await adapter.delete({ path: path.join(BUCKETS_NAMES.HKUBE, '2014-11-28') });
+            const res2 = await adapter.list({ path: path.join(BUCKETS_NAMES.HKUBE, '2014-11-28') });
+            expect(res2.length).to.equal(0);
         }).timeout(40000);
         it('list objects without prefix', async () => {
             const jobId = Date.now().toString();
