@@ -73,6 +73,21 @@ describe('s3-adapter', () => {
             const res = await adapter.list({ path: path.join(BUCKETS_NAMES.HKUBE, moment().format(DateFormat), 'more-than-3000-keys') });
             expect(res.length).to.equal(3500);
         }).timeout(40000);
+        it.only('delete more than 3000 items', async () => {
+            {
+                const promiseArray = [];
+                for (let i = 0; i < 3500; i += 1) {
+                    promiseArray.push(adapter.put({ path: path.join(BUCKETS_NAMES.HKUBE, moment().format(DateFormat), 'more-than-3000-keys2', 'task' + i), data: `test${i}` }));
+                }
+                await Promise.all(promiseArray);
+                const res = await adapter.list({ path: path.join(BUCKETS_NAMES.HKUBE, moment().format(DateFormat), 'more-than-3000-keys2') });
+                expect(res.length).to.equal(3500);
+
+                await adapter.delete({ path: path.join(BUCKETS_NAMES.HKUBE, moment().format(DateFormat), 'more-than-3000-keys2') });
+                const res2 = await adapter.list({ path: path.join(BUCKETS_NAMES.HKUBE, moment().format(DateFormat), 'more-than-3000-keys2') });
+                expect(res2.length).to.equal(0);
+            }
+        }).timeout(40000);
         it('delete by date', async () => {
             await adapter.put({ path: path.join(BUCKETS_NAMES.HKUBE, moment('2015-01-14').format(DateFormat), 'test1', 'test1.json'), data: { data: 'sss' } });
             await adapter.put({ path: path.join(BUCKETS_NAMES.HKUBE, moment('2015-01-14').format(DateFormat), 'test2', 'test2.json'), data: { data: 'sss' } });
