@@ -150,7 +150,7 @@ describe('s3-adapter', () => {
             const res2 = await adapter.list({ path: path.join(BUCKETS_NAMES.HKUBE_RESULTS, '/') });
             expect(res2.length > 0).to.be.true;
         }).timeout(80000);
-        it.only('list objects with delimiter', async () => {
+        it('list objects with delimiter', async () => {
             const jobId = Date.now().toString();
             await adapter.put({ path: path.join(BUCKETS_NAMES.HKUBE_INDEX, '2019-01-01', jobId, '0'), data: { data: 'sss1' } });
             await adapter.put({ path: path.join(BUCKETS_NAMES.HKUBE_INDEX, '2019-01-02', jobId, '1'), data: { data: 'sss2' } });
