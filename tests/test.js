@@ -73,7 +73,7 @@ describe('s3-adapter', () => {
             await Promise.all(promiseArray);
             const res = await adapter.list({ path: path.join(BUCKETS_NAMES.HKUBE, moment().format(DateFormat), 'more-than-3000-keys') });
             expect(res.length).to.equal(3500);
-        }).timeout(40000);
+        }).timeout(80000);
         it('delete more than 3000 items', async () => {
             {
                 const promiseArray = [];
@@ -88,7 +88,7 @@ describe('s3-adapter', () => {
                 const res2 = await adapter.list({ path: path.join(BUCKETS_NAMES.HKUBE, moment().format(DateFormat), 'more-than-3000-keys2') });
                 expect(res2.length).to.equal(0);
             }
-        }).timeout(40000);
+        }).timeout(80000);
         it('delete by date', async () => {
             await adapter.put({ path: path.join(BUCKETS_NAMES.HKUBE, moment('2015-01-14').format(DateFormat), 'test1', 'test1.json'), data: { data: 'sss' } });
             await adapter.put({ path: path.join(BUCKETS_NAMES.HKUBE, moment('2015-01-14').format(DateFormat), 'test2', 'test2.json'), data: { data: 'sss' } });
@@ -127,7 +127,7 @@ describe('s3-adapter', () => {
             await adapter.delete({ path: path.join(BUCKETS_NAMES.HKUBE, '2015-01-14/test3') });
             const res3 = await adapter.list({ path: path.join(BUCKETS_NAMES.HKUBE, '2015-01-14/test3') });
             expect(res3.length).to.equal(0);
-        }).timeout(5000);
+        }).timeout(80000);
         it('delete by date more than 3000 items', async () => {
             const promiseArray = [];
             for (let i = 0; i < 3500; i += 1) {
@@ -137,7 +137,7 @@ describe('s3-adapter', () => {
             await adapter.delete({ path: path.join(BUCKETS_NAMES.HKUBE, '2014-11-28') });
             const res2 = await adapter.list({ path: path.join(BUCKETS_NAMES.HKUBE, '2014-11-28') });
             expect(res2.length).to.equal(0);
-        }).timeout(60000);
+        }).timeout(80000);
         it('list objects without prefix', async () => {
             const jobId = Date.now().toString();
             await Promise.all([
@@ -149,7 +149,7 @@ describe('s3-adapter', () => {
             expect(res1.length > 0).to.be.true;
             const res2 = await adapter.list({ path: path.join(BUCKETS_NAMES.HKUBE_RESULTS, '/') });
             expect(res2.length > 0).to.be.true;
-        }).timeout(40000);
+        }).timeout(80000);
         it('list objects with delimiter', async () => {
             const jobId = Date.now().toString();
             await adapter.put({ path: path.join(BUCKETS_NAMES.HKUBE_INDEX, '2019-01-01', jobId, '0'), data: { data: 'sss1' } });
@@ -160,6 +160,6 @@ describe('s3-adapter', () => {
             expect(rd.includes('2019-01-01/')).to.be.true;
             expect(rd.includes('2019-01-02/')).to.be.true;
             expect(rd.includes('2019-01-03/')).to.be.true;
-        }).timeout(40000);
+        }).timeout(80000);
     });
 });
