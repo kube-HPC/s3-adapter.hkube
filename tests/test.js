@@ -156,7 +156,7 @@ describe('s3-adapter', () => {
             await adapter.put({ path: path.join(BUCKETS_NAMES.HKUBE_INDEX, '2019-01-02', jobId, '1'), data: { data: 'sss2' } });
             await adapter.put({ path: path.join(BUCKETS_NAMES.HKUBE_INDEX, '2019-01-03', jobId, '2'), data: { data: 'sss3' } });
 
-            const rd = await adapter.listByDelimiter({ path: BUCKETS_NAMES.HKUBE_INDEX, delimiter: '/' });
+            const rd = await adapter.listPrefixes({ path: BUCKETS_NAMES.HKUBE_INDEX });
             expect(rd.includes('2019-01-01/')).to.be.true;
             expect(rd.includes('2019-01-02/')).to.be.true;
             expect(rd.includes('2019-01-03/')).to.be.true;
