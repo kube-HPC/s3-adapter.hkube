@@ -19,8 +19,8 @@
     "s3",
     "hkube"
   ],
-  "author": "tal",
-  "license": "ISC",
+  "author": "Hkube",
+  "license": "MIT",
   "dependencies": {
     "@hkube/s3-client": "^1.0.27",
     "moment": "^2.22.2"
