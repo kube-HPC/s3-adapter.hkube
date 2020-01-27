@@ -1,6 +1,6 @@
 const { expect } = require('chai');
 const path = require('path');
-const adapter = require('../lib/s3-adapter');
+const S3Adapter = require('../lib/s3-adapter');
 const moment = require('moment');
 const BUCKETS_NAMES = {
     HKUBE: 'hkube',
@@ -12,6 +12,7 @@ const BUCKETS_NAMES = {
 };
 const DateFormat = 'YYYY-MM-DD';
 const extraOptions = [{ binary: false }, { binary: true }];
+const adapter = new S3Adapter();
 extraOptions.forEach((o) => {
     describe(`s3-adapter ${o.binary ? 'binary' : 'json'}`, () => {
         before(async () => {
