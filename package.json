@@ -22,7 +22,7 @@
   "author": "Hkube",
   "license": "MIT",
   "dependencies": {
-    "@hkube/s3-client": "^2.0.0"
+    "@hkube/s3-client": "^2.0.1"
   },
   "devDependencies": {
     "@hkube/encoding": "^1.0.8",
