@@ -14,6 +14,9 @@ const BUCKETS_NAMES = {
 const DateFormat = 'YYYY-MM-DD';
 const adapter = new S3Adapter();
 
+const { Encoding } = require('@hkube/encoding');
+const encoding = new Encoding({ type: 'json' });
+
 EncodingTypes.forEach((o) => {
     describe(`s3-adapter ${o}`, () => {
         before(async () => {
@@ -25,6 +28,25 @@ EncodingTypes.forEach((o) => {
             };
             adapter._wasInit = false;
             await adapter.init(options, BUCKETS_NAMES, true);
+
+            const wrapperGet = (fn) => {
+                const wrapper = async (args) => {
+                    const result = await fn(args);
+                    return encoding.decode(result);
+                };
+                return wrapper;
+            };
+    
+            const wrapperPut = (fn) => {
+                const wrapper = (args) => {
+                    const data = (!args.ignoreEncode && encoding.encode(args.data)) || args.data;
+                    return fn({ ...args, data });
+                };
+                return wrapper;
+            };
+    
+            adapter.put = wrapperPut(adapter.put.bind(adapter));
+            adapter.get = wrapperGet(adapter.get.bind(adapter));
         });
         describe(`put ${o}`, () => {
             it(`put and get same value ${o}`, async () => {
