@@ -1,12 +1,12 @@
 {
   "name": "@hkube/s3-adapter",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "s3 adapter",
   "main": "index.js",
   "scripts": {
     "lint": "./node_modules/eslint/bin/eslint.js .",
-    "test": "./node_modules/mocha/bin/_mocha tests --colors --recursive --exit",
-    "test-travis": "./node_modules/istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha -- -R spec tests --colors --recursive --exit",
+    "test": "./node_modules/mocha/bin/_mocha tests --timeout=15000 --colors --recursive --exit",
+    "test-travis": "./node_modules/istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha -- -R spec tests --timeout=15000 --colors --recursive --exit",
     "build": "npm publish"
   },
   "pre-commit": {
@@ -22,7 +22,9 @@
   "author": "Hkube",
   "license": "MIT",
   "dependencies": {
-    "@hkube/s3-client": "^2.0.1"
+    "@hkube/s3-client": "^2.0.1",
+    "ajv": "^6.12.2",
+    "aws-sdk": "^2.658.0"
   },
   "devDependencies": {
     "@hkube/encoding": "^1.0.8",
