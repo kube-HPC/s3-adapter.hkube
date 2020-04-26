@@ -24,7 +24,8 @@
   "dependencies": {
     "@hkube/s3-client": "^2.0.1",
     "ajv": "^6.12.2",
-    "aws-sdk": "^2.658.0"
+    "aws-sdk": "^2.658.0",
+    "chai-as-promised": "^7.1.1"
   },
   "devDependencies": {
     "@hkube/encoding": "^1.0.8",

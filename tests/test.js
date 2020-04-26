@@ -1,4 +1,7 @@
-const { expect } = require('chai');
+const chai = require('chai');
+const chaiAsPromised = require('chai-as-promised');
+chai.use(chaiAsPromised);
+const { expect } = chai;
 const path = require('path');
 const fs = require('fs');
 const moment = require('moment');
@@ -393,6 +396,69 @@ describe(`s3-adapter`, () => {
                     await adapter.put({ Bucket, Key, Body: streamObject, ignoreEncode: true });
                     const res = await adapter.get({ Bucket, Key, ignoreEncode: true });
                     expect(res).to.deep.equal(array);
+                });
+            });
+            describe.only('seek', () => {
+                it('seek no start end', async () => {
+                    const Bucket = createJobId();
+                    const Key = createJobId();
+                    await adapter.createBucket({ Bucket });
+                    const buffer = Buffer.from([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+                    const result = await adapter.put({ Bucket, Key, Body: buffer, ignoreEncode: true });
+                    const res = await adapter.seek({ path: result.path, ignoreEncode: true });
+                    expect(res).to.deep.equal(Buffer.from([1]));
+                });
+                it('seek start: 2', async () => {
+                    const Bucket = createJobId();
+                    const Key = createJobId();
+                    await adapter.createBucket({ Bucket });
+                    const buffer = Buffer.from([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+                    const result = await adapter.put({ Bucket, Key, Body: buffer, ignoreEncode: true });
+                    expect(adapter.seek({ path: result.path, start: 2, ignoreEncode: true })).to.eventually.rejectedWith('invalid range');
+                });
+                it('seek start: 2, end: 0', async () => {
+                    const Bucket = createJobId();
+                    const Key = createJobId();
+                    await adapter.createBucket({ Bucket });
+                    const buffer = Buffer.from([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+                    const result = await adapter.put({ Bucket, Key, Body: buffer, ignoreEncode: true });
+                    expect(adapter.seek({ path: result.path, start: 2, end: 0, ignoreEncode: true })).to.eventually.rejectedWith('invalid range');
+                });
+                it('seek start: 0 end: -2', async () => {
+                    const Bucket = createJobId();
+                    const Key = createJobId();
+                    await adapter.createBucket({ Bucket });
+                    const buffer = Buffer.from([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+                    const result = await adapter.put({ Bucket, Key, Body: buffer, ignoreEncode: true });
+                    const res = await adapter.seek({ path: result.path, start: 0, end: -2, ignoreEncode: true });
+                    expect(res).to.deep.equal(Buffer.from([8, 9]));
+                });
+                it('seek start: 2 end: -2', async () => {
+                    const Bucket = createJobId();
+                    const Key = createJobId();
+                    await adapter.createBucket({ Bucket });
+                    const buffer = Buffer.from([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+                    const result = await adapter.put({ Bucket, Key, Body: buffer, ignoreEncode: true });
+                    const res = await adapter.seek({ path: result.path, start: 2, end: -2, ignoreEncode: true });
+                    expect(res).to.deep.equal(Buffer.from([3, 4, 5, 6, 7, 8]));
+                });
+                it('seek start: 0 end: 6', async () => {
+                    const Bucket = createJobId();
+                    const Key = createJobId();
+                    await adapter.createBucket({ Bucket });
+                    const buffer = Buffer.from([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+                    const result = await adapter.put({ Bucket, Key, Body: buffer, ignoreEncode: true });
+                    const res = await adapter.seek({ path: result.path, start: 0, end: 6, ignoreEncode: true });
+                    expect(res).to.deep.equal(Buffer.from([1, 2, 3, 4, 5, 6, 7]));
+                });
+                it('seek end: -6', async () => {
+                    const Bucket = createJobId();
+                    const Key = createJobId();
+                    await adapter.createBucket({ Bucket });
+                    const buffer = Buffer.from([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+                    const result = await adapter.put({ Bucket, Key, Body: buffer, ignoreEncode: true });
+                    const res = await adapter.seek({ path: result.path, end: -6, ignoreEncode: true });
+                    expect(res).to.deep.equal(Buffer.from([4, 5, 6, 7, 8, 9]));
                 });
             });
             describe('bucket name validations', () => {
