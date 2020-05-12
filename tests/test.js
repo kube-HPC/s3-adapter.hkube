@@ -207,7 +207,7 @@ describe(`s3-adapter`, () => {
                     expect(rd.includes('2019-01-03')).to.be.true;
                 });
             });
-            describe('put', () => {
+            describe('put bucket key', () => {
                 it('should throw error on invalid bucket name (empty)', (done) => {
                     adapter.createBucket({ Bucket: '  ' }).catch((error) => {
                         expect(error).to.be.an('error');
@@ -357,6 +357,8 @@ describe(`s3-adapter`, () => {
                         done();
                     });
                 });
+            });
+            describe('getStream', () => {
                 it('get-stream file', async () => {
                     const Bucket = createJobId();
                     const Key = createJobId();
@@ -374,6 +376,29 @@ describe(`s3-adapter`, () => {
                             });
                     });
                 });
+                it('get-stream', async () => {
+                    const Bucket = createJobId();
+                    const Key = createJobId();
+                    await adapter.createBucket({ Bucket });
+
+                    const streamObject = new stream.Readable();
+                    const array = Buffer.alloc(1000, 'dd');
+
+                    streamObject.push(array);
+                    streamObject.push(null);
+
+                    const result = await adapter.put({ Bucket, Key, Body: streamObject, ignoreEncode: true });
+                    const streamRes = await adapter.getStream({ ...result, start: 0, end: 5, ignoreEncode: true });
+                    await new Promise((resolve) => {
+                        const bufs = [];
+                        streamRes.on('data', (d) => { bufs.push(d); });
+                        streamRes.on('end', () => {
+                            const buf = Buffer.concat(bufs);
+                            expect(buf).to.deep.equal(Buffer.alloc(6, 'dd'));
+                            resolve();
+                        });
+                    });
+                });
                 it('get-buffer', async () => {
                     const Bucket = createJobId();
                     const Key = createJobId();
@@ -381,21 +406,6 @@ describe(`s3-adapter`, () => {
                     const buf = Buffer.from('hello buffer');
                     await adapter.put({ Bucket, Key, Body: buf });
                     await adapter.getBuffer({ Bucket, Key });
-                });
-                it('get-stream', async () => {
-                    const Bucket = createJobId();
-                    const Key = createJobId();
-                    await adapter.createBucket({ Bucket });
-
-                    const streamObject = new stream.Readable();
-                    const array = Buffer.alloc(1000000, 'dd')
-
-                    streamObject.push(array);
-                    streamObject.push(null);
-
-                    await adapter.put({ Bucket, Key, Body: streamObject, ignoreEncode: true });
-                    const res = await adapter.get({ Bucket, Key, ignoreEncode: true });
-                    expect(res).to.deep.equal(array);
                 });
             });
             describe.skip('seek', () => {
@@ -406,7 +416,7 @@ describe(`s3-adapter`, () => {
                     const buffer = Buffer.from([1, 2, 3, 4, 5, 6, 7, 8, 9]);
                     const result = await adapter.put({ Bucket, Key, Body: buffer, ignoreEncode: true });
                     const res = await adapter.seek({ path: result.path, ignoreEncode: true });
-                    expect(res).to.deep.equal(Buffer.from([1]));
+                    expect(res).to.deep.equal(buffer);
                 });
                 it('seek start: 2', async () => {
                     const Bucket = createJobId();
@@ -414,7 +424,8 @@ describe(`s3-adapter`, () => {
                     await adapter.createBucket({ Bucket });
                     const buffer = Buffer.from([1, 2, 3, 4, 5, 6, 7, 8, 9]);
                     const result = await adapter.put({ Bucket, Key, Body: buffer, ignoreEncode: true });
-                    expect(adapter.seek({ path: result.path, start: 2, ignoreEncode: true })).to.eventually.rejectedWith('invalid range');
+                    const res = await adapter.seek({ path: result.path, start: 2, ignoreEncode: true })
+                    expect(res).to.deep.equal(Buffer.from([3, 4, 5, 6, 7, 8, 9]));
                 });
                 it('seek start: 2, end: 0', async () => {
                     const Bucket = createJobId();
@@ -431,7 +442,7 @@ describe(`s3-adapter`, () => {
                     const buffer = Buffer.from([1, 2, 3, 4, 5, 6, 7, 8, 9]);
                     const result = await adapter.put({ Bucket, Key, Body: buffer, ignoreEncode: true });
                     const res = await adapter.seek({ path: result.path, start: 0, end: -2, ignoreEncode: true });
-                    expect(res).to.deep.equal(Buffer.from([8, 9]));
+                    expect(res).to.deep.equal(Buffer.from([1, 2, 3, 4, 5, 6, 7, 8]));
                 });
                 it('seek start: 2 end: -2', async () => {
                     const Bucket = createJobId();
