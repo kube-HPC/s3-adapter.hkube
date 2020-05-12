@@ -398,7 +398,7 @@ describe(`s3-adapter`, () => {
                     expect(res).to.deep.equal(array);
                 });
             });
-            describe.only('seek', () => {
+            describe.skip('seek', () => {
                 it('seek no start end', async () => {
                     const Bucket = createJobId();
                     const Key = createJobId();
