@@ -394,7 +394,7 @@ describe(`s3-adapter`, () => {
                         streamRes.on('data', (d) => { bufs.push(d); });
                         streamRes.on('end', () => {
                             const buf = Buffer.concat(bufs);
-                            expect(buf).to.deep.equal(Buffer.alloc(6, 'dd'));
+                            expect(buf).to.deep.equal(Buffer.alloc(5, 'dd'));
                             resolve();
                         });
                     });
@@ -424,34 +424,26 @@ describe(`s3-adapter`, () => {
                     await adapter.createBucket({ Bucket });
                     const buffer = Buffer.from([1, 2, 3, 4, 5, 6, 7, 8, 9]);
                     const result = await adapter.put({ Bucket, Key, Body: buffer, ignoreEncode: true });
-                    const res = await adapter.seek({ path: result.path, start: 2, ignoreEncode: true })
-                    expect(res).to.deep.equal(Buffer.from([3, 4, 5, 6, 7, 8, 9]));
+                    const res = await adapter.seek({ path: result.path, start: 2, end: 3, ignoreEncode: true })
+                    expect(res).to.deep.equal(Buffer.from([3]));
                 });
-                it('seek start: 2, end: 0', async () => {
+                it('seek start: 0 end: 5', async () => {
                     const Bucket = createJobId();
                     const Key = createJobId();
                     await adapter.createBucket({ Bucket });
                     const buffer = Buffer.from([1, 2, 3, 4, 5, 6, 7, 8, 9]);
                     const result = await adapter.put({ Bucket, Key, Body: buffer, ignoreEncode: true });
-                    expect(adapter.seek({ path: result.path, start: 2, end: 0, ignoreEncode: true })).to.eventually.rejectedWith('invalid range');
+                    const res = await adapter.seek({ path: result.path, start: 0, end: 5, ignoreEncode: true });
+                    expect(res).to.deep.equal(Buffer.from([1, 2, 3, 4, 5]));
                 });
-                it('seek start: 0 end: -2', async () => {
+                it('seek start: 2 end: 5', async () => {
                     const Bucket = createJobId();
                     const Key = createJobId();
                     await adapter.createBucket({ Bucket });
                     const buffer = Buffer.from([1, 2, 3, 4, 5, 6, 7, 8, 9]);
                     const result = await adapter.put({ Bucket, Key, Body: buffer, ignoreEncode: true });
-                    const res = await adapter.seek({ path: result.path, start: 0, end: -2, ignoreEncode: true });
-                    expect(res).to.deep.equal(Buffer.from([1, 2, 3, 4, 5, 6, 7, 8]));
-                });
-                it('seek start: 2 end: -2', async () => {
-                    const Bucket = createJobId();
-                    const Key = createJobId();
-                    await adapter.createBucket({ Bucket });
-                    const buffer = Buffer.from([1, 2, 3, 4, 5, 6, 7, 8, 9]);
-                    const result = await adapter.put({ Bucket, Key, Body: buffer, ignoreEncode: true });
-                    const res = await adapter.seek({ path: result.path, start: 2, end: -2, ignoreEncode: true });
-                    expect(res).to.deep.equal(Buffer.from([3, 4, 5, 6, 7, 8]));
+                    const res = await adapter.seek({ path: result.path, start: 2, end: 5, ignoreEncode: true });
+                    expect(res).to.deep.equal(Buffer.from([3, 4, 5]));
                 });
                 it('seek start: 0 end: 6', async () => {
                     const Bucket = createJobId();
@@ -460,7 +452,7 @@ describe(`s3-adapter`, () => {
                     const buffer = Buffer.from([1, 2, 3, 4, 5, 6, 7, 8, 9]);
                     const result = await adapter.put({ Bucket, Key, Body: buffer, ignoreEncode: true });
                     const res = await adapter.seek({ path: result.path, start: 0, end: 6, ignoreEncode: true });
-                    expect(res).to.deep.equal(Buffer.from([1, 2, 3, 4, 5, 6, 7]));
+                    expect(res).to.deep.equal(Buffer.from([1, 2, 3, 4, 5, 6]));
                 });
                 it('seek end: -6', async () => {
                     const Bucket = createJobId();
@@ -468,8 +460,8 @@ describe(`s3-adapter`, () => {
                     await adapter.createBucket({ Bucket });
                     const buffer = Buffer.from([1, 2, 3, 4, 5, 6, 7, 8, 9]);
                     const result = await adapter.put({ Bucket, Key, Body: buffer, ignoreEncode: true });
-                    const res = await adapter.seek({ path: result.path, end: -6, ignoreEncode: true });
-                    expect(res).to.deep.equal(Buffer.from([4, 5, 6, 7, 8, 9]));
+                    const res = await adapter.seek({ path: result.path, start: 3, end: 4, ignoreEncode: true });
+                    expect(res).to.deep.equal(Buffer.from([4]));
                 });
             });
             describe('bucket name validations', () => {
