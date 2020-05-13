@@ -408,7 +408,7 @@ describe(`s3-adapter`, () => {
                     await adapter.getBuffer({ Bucket, Key });
                 });
             });
-            describe('seek', () => {
+            describe.skip('seek', () => {
                 it('seek no start end', async () => {
                     const Bucket = createJobId();
                     const Key = createJobId();
