@@ -22,7 +22,7 @@
   "author": "Hkube",
   "license": "MIT",
   "dependencies": {
-    "ajv": "^6.12.2",
+    "ajv": "^6.12.3",
     "aws-sdk": "^2.674.0"
   },
   "devDependencies": {
