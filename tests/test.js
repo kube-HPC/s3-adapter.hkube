@@ -83,6 +83,7 @@ describe(`s3-adapter`, () => {
                     };
                     return wrapper;
                 };
+                adapter.originalGet = adapter.get;
                 adapter.put = wrapperPut(adapter.put.bind(adapter));
                 adapter.get = wrapperGet(adapter.get.bind(adapter));
             });
@@ -208,15 +209,16 @@ describe(`s3-adapter`, () => {
                 });
             });
             describe('multiPart', () => {
-                it.skip(`put result`, async () => {
-                    const part1 = Buffer.alloc(15);
-                    const part2 = Buffer.alloc(15000);
-                    const part3 = Buffer.alloc(150000);
+                it(`should multiPart upload`, async () => {
+                    const MB = 1024 * 1024;
+                    const part1 = Buffer.alloc(5 * MB);
+                    const part2 = Buffer.alloc(6 * MB);
+                    const part3 = Buffer.alloc(7 * MB);
                     const concat = Buffer.concat([part1, part2, part3]);
                     const data = [part1, part2, part3];
                     const link = await adapter.multiPart({ path: path.join(BUCKETS_NAMES.HKUBE_RESULTS, o, moment().format(DateFormat), 'job-id', 'result.json'), data });
-                    const res = await adapter.get(link);
-                    expect(res).to.equal('test');
+                    const res = await adapter.originalGet(link);
+                    expect(res).to.eql(concat);
                 });
             });
             describe('put bucket key', () => {
