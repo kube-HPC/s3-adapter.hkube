@@ -207,6 +207,18 @@ describe(`s3-adapter`, () => {
                     expect(rd.includes('2019-01-03')).to.be.true;
                 });
             });
+            describe('multiPart', () => {
+                it.skip(`put result`, async () => {
+                    const part1 = Buffer.alloc(15);
+                    const part2 = Buffer.alloc(15000);
+                    const part3 = Buffer.alloc(150000);
+                    const concat = Buffer.concat([part1, part2, part3]);
+                    const data = [part1, part2, part3];
+                    const link = await adapter.multiPart({ path: path.join(BUCKETS_NAMES.HKUBE_RESULTS, o, moment().format(DateFormat), 'job-id', 'result.json'), data });
+                    const res = await adapter.get(link);
+                    expect(res).to.equal('test');
+                });
+            });
             describe('put bucket key', () => {
                 it('should throw error on invalid bucket name (empty)', (done) => {
                     adapter.createBucket({ Bucket: '  ' }).catch((error) => {
