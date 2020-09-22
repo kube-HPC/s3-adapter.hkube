@@ -36,7 +36,7 @@ const mock = {
 };
 const createJobId = () => uniqid() + '-ab-cd-ef';
 
-describe(`s3-adapter`, () => {
+describe(`Tests`, () => {
     before(async () => {
         await adapter.init(options, BUCKETS_NAMES, true);
     });
@@ -83,6 +83,7 @@ describe(`s3-adapter`, () => {
                     };
                     return wrapper;
                 };
+                adapter.originalPut = adapter.put;
                 adapter.originalGet = adapter.get;
                 adapter.put = wrapperPut(adapter.put.bind(adapter));
                 adapter.get = wrapperGet(adapter.get.bind(adapter));
@@ -208,6 +209,22 @@ describe(`s3-adapter`, () => {
                     expect(rd.includes('2019-01-03')).to.be.true;
                 });
             });
+            describe('meta-data', () => {
+                it(`should multiPart upload`, async () => {
+                    const buffer = Buffer.alloc(4);
+                    buffer[0] = 10;
+                    buffer[1] = 20;
+                    buffer[2] = 30;
+                    buffer[3] = 40;
+                    const header = JSON.stringify(buffer);
+                    const data = buffer;
+                    const metadata = { header };
+                    const link = await adapter.originalPut({ path: path.join(BUCKETS_NAMES.HKUBE_RESULTS, o, moment().format(DateFormat), 'job-id', 'result.json'), data, metadata });
+                    const res = await adapter.getWithMetaData(link);
+                    expect(res.data).to.eql(data);
+                    expect(res.metadata).to.eql(metadata);
+                });
+            });
             describe('multiPart', () => {
                 it(`should multiPart upload`, async () => {
                     const MB = 1024 * 1024;
@@ -217,16 +234,6 @@ describe(`s3-adapter`, () => {
                     const concat = Buffer.concat([part1, part2, part3]);
                     const data = [part1, part2, part3];
                     const link = await adapter.multiPart({ path: path.join(BUCKETS_NAMES.HKUBE_RESULTS, o, moment().format(DateFormat), 'job-id', 'result.json'), data });
-                    const res = await adapter.originalGet(link);
-                    expect(res).to.eql(concat);
-                });
-                it(`should append upload`, async () => {
-                    const part1 = Buffer.alloc(15);
-                    const part2 = Buffer.alloc(150);
-                    const part3 = Buffer.alloc(1500);
-                    const concat = Buffer.concat([part1, part2, part3]);
-                    const data = [part1, part2, part3];
-                    const link = await adapter.append({ path: path.join(BUCKETS_NAMES.HKUBE_RESULTS, o, moment().format(DateFormat), 'job-id', 'result.json'), data });
                     const res = await adapter.originalGet(link);
                     expect(res).to.eql(concat);
                 });
@@ -383,23 +390,6 @@ describe(`s3-adapter`, () => {
                 });
             });
             describe('getStream', () => {
-                it('get-stream file', async () => {
-                    const Bucket = createJobId();
-                    const Key = createJobId();
-                    await adapter.createBucket({ Bucket });
-
-                    const readStream = fs.createReadStream('tests/big-file.txt');
-                    const resT = await adapter.put({ Bucket, Key, Body: readStream });
-                    const res = await adapter.getStream({ path: resT.path });
-                    await new Promise((resolve, reject) => {
-                        res.pipe(fs.createWriteStream('tests/dest.txt'))
-                            .on('error', (err) => {
-                                reject(err);
-                            }).on('finish', () => {
-                                resolve();
-                            });
-                    });
-                });
                 it('get-stream', async () => {
                     const Bucket = createJobId();
                     const Key = createJobId();
