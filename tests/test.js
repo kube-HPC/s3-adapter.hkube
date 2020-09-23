@@ -216,10 +216,9 @@ describe(`Tests`, () => {
                     buffer[1] = 20;
                     buffer[2] = 30;
                     buffer[3] = 40;
-                    const custom = { a: 3, b: 4 }
                     const header = buffer;
                     const data = buffer;
-                    const metadata = { header, custom };
+                    const metadata = { header };
                     const link = await adapter.originalPut({ path: path.join(BUCKETS_NAMES.HKUBE_RESULTS, o, moment().format(DateFormat), 'job-id', 'result.json'), data, metadata });
                     const res = await adapter.getMetadata(link);
                     expect(res.metadata).to.eql(metadata);
@@ -230,10 +229,9 @@ describe(`Tests`, () => {
                     buffer[1] = 20;
                     buffer[2] = 30;
                     buffer[3] = 40;
-                    const custom = { a: 3, b: 4 }
                     const header = buffer;
                     const data = buffer;
-                    const metadata = { header, custom };
+                    const metadata = { header };
                     const link = await adapter.originalPut({ path: path.join(BUCKETS_NAMES.HKUBE_RESULTS, o, moment().format(DateFormat), 'job-id', 'result.json'), data, metadata });
                     const res = await adapter.getWithMetaData(link);
                     expect(res.data).to.eql(data);
@@ -245,10 +243,9 @@ describe(`Tests`, () => {
                     buffer[1] = 20;
                     buffer[2] = 30;
                     buffer[3] = 40;
-                    const custom = { a: 3, b: 4 }
                     const header = buffer;
                     const data = buffer;
-                    const metadata = { header, custom };
+                    const metadata = { header };
                     const link = await adapter.originalPut({ path: path.join(BUCKETS_NAMES.HKUBE_RESULTS, o, moment().format(DateFormat), 'job-id', 'result.json'), data, metadata });
                     const res = await adapter.getHeader(link);
                     expect(res).to.eql(header);
