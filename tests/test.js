@@ -239,6 +239,20 @@ describe(`Tests`, () => {
                     expect(res.data).to.eql(data);
                     expect(res.metadata).to.eql(metadata);
                 });
+                it(`should getHeader`, async () => {
+                    const buffer = Buffer.alloc(4);
+                    buffer[0] = 10;
+                    buffer[1] = 20;
+                    buffer[2] = 30;
+                    buffer[3] = 40;
+                    const custom = { a: 3, b: 4 }
+                    const header = buffer;
+                    const data = buffer;
+                    const metadata = { header, custom };
+                    const link = await adapter.originalPut({ path: path.join(BUCKETS_NAMES.HKUBE_RESULTS, o, moment().format(DateFormat), 'job-id', 'result.json'), data, metadata });
+                    const res = await adapter.getHeader(link);
+                    expect(res).to.eql(header);
+                });
             });
             describe('multiPart', () => {
                 it(`should multiPart upload`, async () => {
