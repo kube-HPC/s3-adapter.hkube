@@ -210,15 +210,30 @@ describe(`Tests`, () => {
                 });
             });
             describe('meta-data', () => {
-                it(`should multiPart upload`, async () => {
+                it(`should put and get only metadata`, async () => {
                     const buffer = Buffer.alloc(4);
                     buffer[0] = 10;
                     buffer[1] = 20;
                     buffer[2] = 30;
                     buffer[3] = 40;
-                    const header = JSON.stringify(buffer);
+                    const custom = { a: 3, b: 4 }
+                    const header = buffer;
                     const data = buffer;
-                    const metadata = { header };
+                    const metadata = { header, custom };
+                    const link = await adapter.originalPut({ path: path.join(BUCKETS_NAMES.HKUBE_RESULTS, o, moment().format(DateFormat), 'job-id', 'result.json'), data, metadata });
+                    const res = await adapter.getMetadata(link);
+                    expect(res.metadata).to.eql(metadata);
+                });
+                it(`should put and get object with metadata`, async () => {
+                    const buffer = Buffer.alloc(4);
+                    buffer[0] = 10;
+                    buffer[1] = 20;
+                    buffer[2] = 30;
+                    buffer[3] = 40;
+                    const custom = { a: 3, b: 4 }
+                    const header = buffer;
+                    const data = buffer;
+                    const metadata = { header, custom };
                     const link = await adapter.originalPut({ path: path.join(BUCKETS_NAMES.HKUBE_RESULTS, o, moment().format(DateFormat), 'job-id', 'result.json'), data, metadata });
                     const res = await adapter.getWithMetaData(link);
                     expect(res.data).to.eql(data);
