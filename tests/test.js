@@ -209,7 +209,7 @@ describe(`Tests`, () => {
                     expect(rd.includes('2019-01-03')).to.be.true;
                 });
             });
-            describe.only('meta-data', () => {
+            describe('meta-data', () => {
                 it(`should put and get only metadata`, async () => {
                     const buffer = Buffer.alloc(4);
                     buffer[0] = 10;
