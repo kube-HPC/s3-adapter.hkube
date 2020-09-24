@@ -218,7 +218,8 @@ describe(`Tests`, () => {
                     buffer[3] = 40;
                     const header = buffer;
                     const data = buffer;
-                    const metadata = { header };
+                    const custom = { a: 1, b: 2, c: 'data' };
+                    const metadata = { header, custom };
                     const link = await adapter.originalPut({ path: path.join(BUCKETS_NAMES.HKUBE_RESULTS, o, moment().format(DateFormat), 'job-id', 'result.json'), data, metadata });
                     const res = await adapter.getMetadata(link);
                     expect(res.metadata).to.eql(metadata);
@@ -231,7 +232,8 @@ describe(`Tests`, () => {
                     buffer[3] = 40;
                     const header = buffer;
                     const data = buffer;
-                    const metadata = { header };
+                    const custom = { a: 1, b: 2, c: 'data', arr: [1, 2, 3] };
+                    const metadata = { header, custom };
                     const link = await adapter.originalPut({ path: path.join(BUCKETS_NAMES.HKUBE_RESULTS, o, moment().format(DateFormat), 'job-id', 'result.json'), data, metadata });
                     const res = await adapter.getWithMetaData(link);
                     expect(res.data).to.eql(data);
@@ -245,7 +247,8 @@ describe(`Tests`, () => {
                     buffer[3] = 40;
                     const header = buffer;
                     const data = buffer;
-                    const metadata = { header };
+                    const custom = { a: 1, b: 2, c: 'data', arr: [1, 2, 3] };
+                    const metadata = { header, custom };
                     const link = await adapter.originalPut({ path: path.join(BUCKETS_NAMES.HKUBE_RESULTS, o, moment().format(DateFormat), 'job-id', 'result.json'), data, metadata });
                     const res = await adapter.getHeader(link);
                     expect(res).to.eql(header);
