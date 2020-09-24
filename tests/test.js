@@ -239,7 +239,7 @@ describe(`Tests`, () => {
                     expect(res.data).to.eql(data);
                     expect(res.metadata).to.eql(metadata);
                 });
-                it(`should getHeader`, async () => {
+                it(`should getMetadata`, async () => {
                     const buffer = Buffer.alloc(4);
                     buffer[0] = 10;
                     buffer[1] = 20;
@@ -250,7 +250,7 @@ describe(`Tests`, () => {
                     const custom = { a: 1, b: 2, c: 'data', arr: [1, 2, 3] };
                     const metadata = { header, custom };
                     const link = await adapter.originalPut({ path: path.join(BUCKETS_NAMES.HKUBE_RESULTS, o, moment().format(DateFormat), 'job-id', 'result.json'), data, metadata });
-                    const res = await adapter.getHeader(link);
+                    const res = await adapter.getMetadata(link);
                     expect(res).to.eql(header);
                 });
             });
